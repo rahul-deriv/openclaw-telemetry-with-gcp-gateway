@@ -1,23 +1,8 @@
-```
-██╗  ██╗███╗   ██╗ ██████╗ ███████╗████████╗██╗ ██████╗
-██║ ██╔╝████╗  ██║██╔═══██╗██╔════╝╚══██╔══╝██║██╔════╝
-█████╔╝ ██╔██╗ ██║██║   ██║███████╗   ██║   ██║██║     
-██╔═██╗ ██║╚██╗██║██║   ██║╚════██║   ██║   ██║██║     
-██║  ██╗██║ ╚████║╚██████╔╝███████║   ██║   ██║╚██████╗
-╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝ ╚═════╝
-```
-
 # OpenClaw Telemetry Plugin
-
-**By [Knostic](https://knostic.ai/)**
 
 > **Observability for OpenClaw.** Capture every tool call, LLM request, and agent session — with built-in redaction, tamper-proof hash chains, syslog/SIEM forwarding, and rate limiting. Drop it in and know exactly what your agents are doing.
 
-**Repository:** https://github.com/rahul-deriv/openclaw-telemetry-gateway
-
-Also check out:
-- **openclaw-detect:** https://github.com/knostic/openclaw-detect/
-- **Like what we do?** Knostic helps you with visibility and control of your coding agents and MCP/extensions, from Cursor and Claude Code, to Copilot.
+**Repository:** https://github.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway
 
 ---
 
@@ -31,8 +16,8 @@ Captures tool calls, LLM usage, agent lifecycle, and message events. Outputs to 
 
 Clone the repository:
 ```bash
-git clone https://github.com/rahul-deriv/openclaw-telemetry-gateway.git
-cd openclaw-telemetry-gateway
+git clone https://github.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway.git
+cd openclaw-telemetry-with-gcp-gateway
 ```
 
 Then install:
@@ -92,39 +77,21 @@ openclaw plugins install @openclaw/telemetry-gateway
 
 Forward events to a GCP API Gateway via HTTP with API key authentication.
 
+> **Admin-managed:** The endpoint URL and API key are **not** user-configurable. They are written to a root-owned file (`/Library/Application Support/OpenClaw/telemetry-gateway.json`, mode `640`) by MDM at deploy time. Users cannot read or modify them. The options below are the only tuning knobs exposed to end users.
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `gcpApiGateway.enabled` | boolean | `false` | Enable GCP API Gateway forwarding |
-| `gcpApiGateway.endpoint` | string | required | API Gateway URL |
-| `gcpApiGateway.apiKey` | string | required | API key (sent in `X-API-Key` header) |
 | `gcpApiGateway.batchSize` | number | `100` | Events per batch |
 | `gcpApiGateway.flushIntervalMs` | number | `5000` | Max wait before flush (ms) |
 | `gcpApiGateway.maxRetries` | number | `3` | Retry attempts |
 | `gcpApiGateway.retryDelayMs` | number | `1000` | Delay between retries (ms) |
 | `gcpApiGateway.timeoutMs` | number | `10000` | Request timeout (ms) |
 
-Example:
-```json
-{
-  "plugins": {
-    "entries": {
-      "telemetry": {
-        "enabled": true,
-        "config": {
-          "enabled": true,
-          "gcpApiGateway": {
-            "enabled": true,
-            "endpoint": "https://api-gateway-xyz.run.app/telemetry",
-            "apiKey": "YOUR_API_KEY"
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-**MDM deployment:** Use `install.sh` with Jamf or other MDM. Pass endpoint as `$4`, API key as `$5`, GitHub repo as `$6`.
+**MDM deployment (Jamf):** Use `install.sh`. Script parameters:
+- `$4` — GCP API Gateway endpoint URL
+- `$5` — GCP API key
+- `$6` — GitHub repo URL (optional)
+- `$7` — GitHub branch (optional, default: `main`)
 
 ### Syslog Output
 

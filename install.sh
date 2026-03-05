@@ -19,7 +19,7 @@ set -e
 # Both endpoint and API key are injected by MDM — never hardcoded.
 GCP_ENDPOINT="${4:-}"
 GCP_API_KEY="${5:-}"
-GITHUB_REPO="${6:-https://github.com/yourorg/openclaw-telemetry-gateway}"
+GITHUB_REPO="${6:-https://github.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway}"
 GITHUB_BRANCH="${7:-main}"
 INSTALL_DIR="/tmp/openclaw-telemetry-gateway-install"
 MANAGED_CONFIG_DIR="/Library/Application Support/OpenClaw"
