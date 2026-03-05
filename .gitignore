@@ -11,3 +11,6 @@ build/
 *.cert
 secrets/
 .secrets/
+
+# Local installer scripts that contain real credentials — NEVER commit these
+install-local.sh
