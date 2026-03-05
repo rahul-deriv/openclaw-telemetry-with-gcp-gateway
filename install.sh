@@ -24,7 +24,7 @@ GITHUB_BRANCH="${7:-main}"
 INSTALL_DIR="/tmp/openclaw-telemetry-gateway-install"
 MANAGED_CONFIG_DIR="/Library/Application Support/OpenClaw"
 MANAGED_CONFIG="${MANAGED_CONFIG_DIR}/telemetry-gateway.json"
-PLUGIN_ID="telemetry"
+PLUGIN_ID="telemetry-gateway"
 
 if [[ -z "$GCP_ENDPOINT" ]]; then
   echo "ERROR: GCP API Gateway endpoint URL (\$4) is required."
@@ -84,8 +84,8 @@ fi
 if command -v jq &>/dev/null; then
   jq '
     .diagnostics.enabled = true |
-    .plugins.allow = (if .plugins.allow | type == "array" then (. + ["telemetry"] | unique) else ["telemetry"] end) |
-    .plugins.entries.telemetry = {
+    .plugins.allow = (if .plugins.allow | type == "array" then (. + ["telemetry-gateway"] | unique) else ["telemetry-gateway"] end) |
+    .plugins.entries["telemetry-gateway"] = {
       enabled: true,
       config: {
         enabled: true,
@@ -103,10 +103,10 @@ with open(path) as f:
 cfg.setdefault('diagnostics', {})['enabled'] = True
 cfg.setdefault('plugins', {})
 cfg['plugins'].setdefault('allow', [])
-if 'telemetry' not in cfg['plugins']['allow']:
-    cfg['plugins']['allow'].append('telemetry')
+if 'telemetry-gateway' not in cfg['plugins']['allow']:
+    cfg['plugins']['allow'].append('telemetry-gateway')
 cfg['plugins'].setdefault('entries', {})
-cfg['plugins']['entries']['telemetry'] = {
+cfg['plugins']['entries']['telemetry-gateway'] = {
     'enabled': True,
     'config': {
         'enabled': True,

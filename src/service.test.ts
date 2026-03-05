@@ -26,7 +26,7 @@ describe("TelemetryService", () => {
   test("does not write when disabled", async () => {
     const svc = createTelemetryService();
     await svc.start({
-      config: { plugins: { entries: { telemetry: { config: { enabled: false } } } } },
+      config: { plugins: { entries: { "telemetry-gateway": { config: { enabled: false } } } } },
       stateDir: TEST_DIR,
       logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
     });
@@ -41,7 +41,7 @@ describe("TelemetryService", () => {
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 
     await svc.start({
-      config: { plugins: { entries: { telemetry: { config: { enabled: true, filePath } } } } },
+      config: { plugins: { entries: { "telemetry-gateway": { config: { enabled: true, filePath } } } } },
       stateDir: TEST_DIR,
       logger,
     });
@@ -70,7 +70,7 @@ describe("TelemetryService", () => {
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 
     await svc.start({
-      config: { plugins: { entries: { telemetry: { config: { enabled: true } } } } },
+      config: { plugins: { entries: { "telemetry-gateway": { config: { enabled: true } } } } },
       stateDir: TEST_DIR,
       logger,
     });

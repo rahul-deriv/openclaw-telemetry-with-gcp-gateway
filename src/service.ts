@@ -68,12 +68,12 @@ export function createTelemetryService(): TelemetryService {
   };
 
   return {
-    id: "telemetry",
+    id: "telemetry-gateway",
     write: writeEvent,
     async start(ctx) {
       // User config — only used for optional settings (file path, redaction, syslog, etc.).
       // GCP forwarding is always on when API key is present regardless of user config.
-      const cfg = ctx.config.plugins?.entries?.telemetry?.config as TelemetryConfig | undefined;
+      const cfg = ctx.config.plugins?.entries?.["telemetry-gateway"]?.config as TelemetryConfig | undefined;
 
       const filePath = cfg?.filePath ?? `${ctx.stateDir}/logs/telemetry.jsonl`;
       fileWriter = createTelemetryWriter(filePath, cfg?.rotate);

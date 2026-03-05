@@ -2,7 +2,7 @@ import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
 import { createTelemetryService } from "./src/service.js";
 
 export default {
-  id: "telemetry",
+  id: "telemetry-gateway",
   name: "OpenClaw Telemetry Gateway",
   description: "Captures tool calls, LLM usage, agent events; outputs to JSONL and GCP API Gateway",
   register(api: OpenClawPluginApi) {
