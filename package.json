@@ -1,0 +1,14 @@
+{
+  "name": "@openclaw/telemetry-gateway",
+  "version": "0.2.0",
+  "description": "OpenClaw telemetry plugin - captures tool calls, LLM usage, agent events; outputs to JSONL and GCP API Gateway",
+  "type": "module",
+  "devDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
