@@ -72,6 +72,7 @@ openclaw plugins install @openclaw/telemetry-gateway
 |--------|------|---------|-------------|
 | `enabled` | boolean | `false` | Enable telemetry capture |
 | `filePath` | string | `~/.openclaw/logs/telemetry.jsonl` | JSONL output file path |
+| `instanceId` | string | _(none)_ | Human-readable label for this deployment (e.g. `"prod-sydney"`, `"staging-eu"`). Appears on every event so you can tell apart logs from multiple OpenClaw installs. The machine hostname is always captured automatically — `instanceId` is an extra label on top. |
 
 ### GCP API Gateway Output
 
@@ -175,6 +176,7 @@ Rotates JSONL files to prevent unbounded growth.
   "plugins": {
     "telemetry": {
       "enabled": true,
+      "instanceId": "prod-sydney",
       "redact": {
         "enabled": true
       },
@@ -236,14 +238,21 @@ Rotates JSONL files to prevent unbounded growth.
 
 ### JSONL Format
 
+Every event includes `hostname` (the OS machine name, captured automatically) and, if configured, `instanceId` (your human-readable deployment label). These fields let you identify which OpenClaw install produced a log line when events from multiple machines flow into the same destination.
+
 Basic event:
 ```json
-{"type":"tool.start","toolName":"bash","params":{"cmd":"ls"},"sessionKey":"telegram:123","seq":1,"ts":1738517700000}
+{"type":"tool.start","toolName":"bash","params":{"cmd":"ls"},"sessionKey":"telegram:123","seq":1,"ts":1738517700000,"hostname":"mbp-rahul-01"}
+```
+
+With `instanceId` configured:
+```json
+{"type":"tool.start","toolName":"bash","params":{"cmd":"ls"},"seq":1,"ts":1738517700000,"hostname":"mbp-rahul-01","instanceId":"prod-sydney"}
 ```
 
 With integrity enabled:
 ```json
-{"type":"tool.start","toolName":"bash","params":{"cmd":"ls"},"seq":1,"ts":1738517700000,"prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"a1b2c3d4e5f6..."}
+{"type":"tool.start","toolName":"bash","params":{"cmd":"ls"},"seq":1,"ts":1738517700000,"hostname":"mbp-rahul-01","prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"a1b2c3d4e5f6..."}
 ```
 
 With redaction (before):
@@ -294,6 +303,15 @@ jq 'select(.sessionKey=="telegram:123456")' ~/.openclaw/logs/telemetry.jsonl
 
 # Find failed tool calls
 jq 'select(.type=="tool.end" and .success==false)' ~/.openclaw/logs/telemetry.jsonl
+
+# Show only events from a specific machine (useful when logs from multiple installs are merged)
+jq 'select(.hostname=="mbp-rahul-01")' ~/.openclaw/logs/telemetry.jsonl
+
+# Show only events from a named deployment
+jq 'select(.instanceId=="prod-sydney")' ~/.openclaw/logs/telemetry.jsonl
+
+# Summarise LLM cost per instance across a merged log
+jq -s 'group_by(.instanceId // .hostname) | map({instance: .[0].instanceId // .[0].hostname, totalCostUsd: (map(select(.type=="llm.usage") | .costUsd // 0) | add)})' merged.jsonl
 ```
 
 ## Rotated Files

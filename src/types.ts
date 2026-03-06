@@ -1,6 +1,8 @@
 export type TelemetryEventBase = {
   ts: number;
   seq: number;
+  hostname: string;
+  instanceId?: string;
   sessionKey?: string;
   agentId?: string;
 };
@@ -68,7 +70,7 @@ export type TelemetryEvent =
 
 export type TelemetryEventInput = TelemetryEvent extends infer E
   ? E extends TelemetryEvent
-    ? Omit<E, "seq" | "ts">
+    ? Omit<E, "seq" | "ts" | "hostname" | "instanceId">
     : never
   : never;
 
@@ -122,6 +124,7 @@ export type RotateConfig = {
 export type TelemetryConfig = {
   enabled?: boolean;
   filePath?: string;
+  instanceId?: string;
   gcpApiGateway?: GcpApiGatewayConfig;
   syslog?: SyslogConfig;
   redact?: RedactConfig;

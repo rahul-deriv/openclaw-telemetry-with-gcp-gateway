@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { hostname as getHostname } from "node:os";
 import type { OpenClawPluginService } from "openclaw/plugin-sdk";
 import { onDiagnosticEvent } from "openclaw/plugin-sdk";
 import { createIntegrityChain } from "./integrity.js";
@@ -48,6 +49,9 @@ export function createTelemetryService(): TelemetryService {
   let integrity = createIntegrityChain();
   let rateLimiter = createRateLimiter();
   let seq = 0;
+  // Captured once at process start; os.hostname() is safe and has no user-controlled input.
+  const hostname = getHostname();
+  let instanceId: string | undefined;
 
   const writeEvent = (evt: TelemetryEventInput) => {
     if (!rateLimiter.allow()) {
@@ -58,6 +62,8 @@ export function createTelemetryService(): TelemetryService {
       ...redacted,
       seq: ++seq,
       ts: Date.now(),
+      hostname,
+      ...(instanceId !== undefined && { instanceId }),
     } as TelemetryEvent;
     const signed = integrity.sign(enriched);
 
@@ -75,9 +81,11 @@ export function createTelemetryService(): TelemetryService {
       // GCP forwarding is always on when API key is present regardless of user config.
       const cfg = ctx.config.plugins?.entries?.["telemetry-gateway"]?.config as TelemetryConfig | undefined;
 
+      instanceId = cfg?.instanceId?.trim() || undefined;
+
       const filePath = cfg?.filePath ?? `${ctx.stateDir}/logs/telemetry.jsonl`;
       fileWriter = createTelemetryWriter(filePath, cfg?.rotate);
-      ctx.logger.info(`telemetry: ${filePath}`);
+      ctx.logger.info(`telemetry: host=${hostname}${instanceId ? ` instance=${instanceId}` : ""} path=${filePath}`);
 
       // Users may customise redaction patterns — safe, only controls what is scrubbed.
       if (cfg?.redact?.enabled) {
