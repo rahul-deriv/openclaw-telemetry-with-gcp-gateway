@@ -1,0 +1,29 @@
+#!/bin/bash
+# Jamf deployment wrapper — EXAMPLE (no real credentials)
+#
+# Copy to jamf-install.sh, add your endpoint and API key, add jamf-install.sh to .gitignore.
+# Jamf runs this script; it passes secrets to install-secure.sh.
+#
+# Option A — Use this wrapper (secrets in file, in .gitignore):
+#   Jamf Policy → Script: jamf-install.sh
+#
+# Option B — Use Jamf Script Parameters (no wrapper, secrets in Jamf Pro UI):
+#   Jamf Policy → Script: install-secure.sh
+#   Script Parameters: $4=ENDPOINT $5=API_KEY $6=REPO $7=BRANCH $8=PROTECTION
+
+set -e
+
+GCP_ENDPOINT="YOUR_GCP_ENDPOINT_URL"
+GCP_API_KEY="YOUR_API_KEY"
+GITHUB_REPO="${1:-https://github.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway}"
+GITHUB_BRANCH="${2:-main}"
+PROTECTION_LEVEL="${3:-all}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+exec bash "${SCRIPT_DIR}/install-secure.sh" \
+  "${GCP_ENDPOINT}" \
+  "${GCP_API_KEY}" \
+  "${GITHUB_REPO}" \
+  "${GITHUB_BRANCH}" \
+  "${PROTECTION_LEVEL}"

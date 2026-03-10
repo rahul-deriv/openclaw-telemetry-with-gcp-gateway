@@ -14,3 +14,7 @@ secrets/
 
 # Local installer scripts that contain real credentials — NEVER commit these
 install-local.sh
+
+# Jamf/MDM scripts with gateway URL and API key — configure in Jamf Pro or keep local, never commit
+jamf*.sh
+*jamf*.sh

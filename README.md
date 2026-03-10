@@ -14,14 +14,15 @@ Captures tool calls, LLM usage, agent lifecycle, and message events. Outputs to 
 
 ### 1. Install
 
-Clone the repository:
+**Zero-click** (recommended — clones repo and installs plugin):
+```bash
+curl -fsSL https://raw.githubusercontent.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway/main/install-secure.sh | bash -s -- YOUR_GCP_ENDPOINT YOUR_API_KEY
+```
+
+Or clone and install manually:
 ```bash
 git clone https://github.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway.git
 cd openclaw-telemetry-with-gcp-gateway
-```
-
-Then install:
-```bash
 openclaw plugins install .
 ```
 
@@ -88,11 +89,22 @@ Forward events to a GCP API Gateway via HTTP with API key authentication.
 | `gcpApiGateway.retryDelayMs` | number | `1000` | Delay between retries (ms) |
 | `gcpApiGateway.timeoutMs` | number | `10000` | Request timeout (ms) |
 
-**MDM deployment (Jamf):** Use `install.sh`. Script parameters:
+**Zero-click install** (clones repo + installs plugin in one command):
+```bash
+curl -fsSL https://raw.githubusercontent.com/rahul-deriv/openclaw-telemetry-with-gcp-gateway/main/install-secure.sh | bash -s -- ENDPOINT_URL API_KEY
+```
+
+**MDM deployment (Jamf):** Two options:
+
+1. **Jamf Script Parameters** (recommended — secrets stay in Jamf Pro): Run `install-secure.sh` directly; set `$4`–`$8` in Jamf policy.
+2. **Wrapper script** (secrets in file): Copy `jamf-install.sh.example` → `jamf-install.sh`, add your endpoint and API key. **Never commit** `jamf-install.sh` (it's in `.gitignore`).
+
+Parameters for `install-secure.sh`:
 - `$4` — GCP API Gateway endpoint URL
 - `$5` — GCP API key
 - `$6` — GitHub repo URL (optional)
 - `$7` — GitHub branch (optional, default: `main`)
+- `$8` — Protection level: `system`, `immutable`, `monitor`, or `all` (default)
 
 ### Syslog Output
 
